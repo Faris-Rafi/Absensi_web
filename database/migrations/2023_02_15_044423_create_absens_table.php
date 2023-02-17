@@ -18,16 +18,16 @@ return new class extends Migration
             $table->uuid()->unique();
             $table->foreignId('user_id');
             $table->string('key')->unique();
-            $table->timestamp('tanggal_masuk')->nullable();
-            $table->timestamp('tanggal_keluar')->nullable();
-            $table->timestamp('tanggal_beres_cuti')->nullable();
+            $table->string('tanggal');
+            $table->string('jam_masuk');
+            $table->string('jam_keluar')->nullable();
             $table->string('lokasi');
             $table->string('ip_address');
-            $table->string('status');
+            $table->string('kehadiran');
             $table->string('keterangan');
+            $table->string('status');
             $table->string('tahun');
             $table->string('bulan');
-            $table->string('tanggal');
             $table->timestamps();
         });
     }

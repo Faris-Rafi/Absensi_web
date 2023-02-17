@@ -17,7 +17,16 @@ class AbsenController extends Controller
      */
     public function index()
     {
-        return view('absen');
+        $auth = auth()->user()->id;
+        $timeNow = Carbon::now('Asia/Jakarta');
+        $timeLimit = Carbon::createFromTime(17, 0, 0, 'Asia/Jakarta');
+        $key = $timeNow->format('ym') . substr($timeNow->year, -2);
+
+        $user = User::with(['absen' => fn ($query) =>
+            $query->where('key', $key.'_'.$auth)
+        ])->where('id', auth()->user()->id)->first();
+
+        return view('absen', compact('user', 'timeNow', 'timeLimit'));
     }
 
     /**
@@ -38,22 +47,25 @@ class AbsenController extends Controller
      */
     public function store(Request $request)
     {
+        $auth = auth()->user()->id;
         $timeNow = Carbon::now('Asia/Jakarta');
+        $key = $timeNow->format('ym') . substr($timeNow->year, -2);
         $timeLimit = Carbon::createFromTime(8, 0, 0, 'Asia/Jakarta');
 
         $validatedData = $request->validate([
             'lokasi' => ['required'],
-            'status' => ['required']
+            'kehadiran' => ['required']
         ]);
 
         $validatedData['uuid'] = Str::orderedUuid();
-        $validatedData['key'] = date('ymd').'_'.auth()->user()->id;
+        $validatedData['key'] = $key.'_'.$auth;
         $validatedData['user_id'] = auth()->user()->id;
-        $validatedData['tanggal_masuk'] = $timeNow;
-        $validatedData['ip_address'] = $_SERVER['REMOTE_ADDR'];
-        $validatedData['tahun'] = date('Y');
-        $validatedData['bulan'] = date('m');
-        $validatedData['tanggal'] = date('d');
+        $validatedData['tanggal'] = $timeNow->format('d-m-Y');
+        $validatedData['jam_masuk'] = $timeNow->format('H:m:s');
+        $validatedData['ip_address'] = $request->ip();
+        $validatedData['status'] = 'Masuk';
+        $validatedData['tahun'] = $timeNow->format('Y');
+        $validatedData['bulan'] = $timeNow->format('m');
 
         if ($timeNow->timestamp <= $timeLimit->timestamp) {
             $validatedData['keterangan'] = 'On Time';
@@ -68,7 +80,7 @@ class AbsenController extends Controller
 
         Absen::create($validatedData);
 
-        return redirect('/dashboard')->with('success', 'Anda Berhasi Absen!');
+        return redirect('/dashboard')->with('success', 'Anda Berhasil Absen!');
     }
 
     /**
@@ -100,9 +112,18 @@ class AbsenController extends Controller
      * @param  \App\Models\Absen  $absen
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Absen $absen)
+    public function update(Request $request)
     {
-        //
+        $auth = auth()->user()->id;
+        $timeNow = Carbon::now('Asia/Jakarta');
+        $key = $timeNow->format('ym') . substr($timeNow->year, -2);
+
+        Absen::where('key', $key. '_' .$auth)->update([
+            'jam_keluar' => $timeNow->format('H:m:s'),
+            'status' => 'Keluar'
+        ]);
+
+        return redirect('/dashboard')->with('success', 'Anda Berhasil Absen!');
     }
 
     /**

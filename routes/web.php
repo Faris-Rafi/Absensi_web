@@ -28,6 +28,7 @@ Route::middleware('auth')->group(function () {
     });  
     Route::get('/dashboard/absen', [AbsenController::class, 'index']);
     Route::post('/dashboard/absen', [AbsenController::class, 'store']);
+    Route::post('/dashboard/absen/pulang', [AbsenController::class, 'update']);
 });
 
 Route::middleware('admin')->group(function () {
