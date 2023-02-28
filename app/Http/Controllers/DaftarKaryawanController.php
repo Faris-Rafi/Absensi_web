@@ -35,8 +35,8 @@ class DaftarKaryawanController extends Controller
         $validatedData = $request->validate([
             'name' => ['required', 'max:255'],
             'email' => ['required', 'email:dns', 'unique:users'],
-            'password' => ['required', 'min:8'],
-            'leave_limit' => ['required', 'numeric']
+            'leave_limit' => ['required', 'numeric'],
+            'password' => ['required', 'min:8']
         ]);
 
         $validatedData['password'] = Hash::make($validatedData['password']);
