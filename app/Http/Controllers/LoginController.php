@@ -7,12 +7,14 @@ use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
-    public function index () 
+    public function index()
     {
-        return view('auth.login');
+        $title = 'Login';
+
+        return view('auth.login', compact('title'));
     }
 
-    public function authenticate (Request $request)
+    public function authenticate(Request $request)
     {
         $credentials = $request->validate([
             'email' => 'required|email:dns',
@@ -27,7 +29,7 @@ class LoginController extends Controller
         return back()->with('error', 'Login Failed!');
     }
 
-    public function logout (Request $request)
+    public function logout(Request $request)
     {
         Auth::logout();
         $request->session()->invalidate();

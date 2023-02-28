@@ -13,11 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('time_offs', function (Blueprint $table) {
+        Schema::create('requests', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id');
-            $table->timestamp('tanggal_selesai');
-            $table->string('status');
+            $table->string('start_date');
+            $table->string('end_date');
+            $table->foreignId('request_type_id');
+            $table->text('reason');
+            $table->integer('status')->default(0);
             $table->timestamps();
         });
     }

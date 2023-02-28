@@ -13,21 +13,22 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('absens', function (Blueprint $table) {
+        Schema::create('attendances', function (Blueprint $table) {
             $table->id();
             $table->uuid()->unique();
             $table->foreignId('user_id');
             $table->string('key')->unique();
-            $table->string('tanggal');
-            $table->string('jam_masuk');
-            $table->string('jam_keluar')->nullable();
-            $table->string('lokasi');
+            $table->string('date');
+            $table->string('clock_in');
+            $table->string('clock_out')->nullable();
+            $table->string('work_duration')->nullable();
+            $table->foreignId('location_id');
             $table->string('ip_address');
-            $table->string('kehadiran');
-            $table->string('keterangan');
-            $table->string('status');
-            $table->string('tahun');
-            $table->string('bulan');
+            $table->foreignId('presence_type_id')->nullable();
+            $table->foreignId('arrival_type_id');
+            $table->integer('status')->default(0);
+            $table->string('year');
+            $table->string('month');
             $table->timestamps();
         });
     }
@@ -39,6 +40,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('absens');
+        Schema::dropIfExists('attendances');
     }
 };

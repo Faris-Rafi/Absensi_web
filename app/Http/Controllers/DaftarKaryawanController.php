@@ -4,85 +4,73 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
 
 class DaftarKaryawanController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    
     public function index()
     {
         $this->authorize('admin');
-        return view('listKaryawan', [
-            'users' => User::all()
-        ]);
+
+        $users = User::all();
+        $title = 'Daftar Karyawan';
+
+        return view('DaftarKaryawan', compact('users', 'title'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {
-        //
+        $this->authorize('admin');
+        $title = 'Register';
+        $head = 'Tambah Karyawan';
+        
+        return view('Register', compact('title', 'head'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
-        //
+        $this->authorize('admin');
+        $validatedData = $request->validate([
+            'name' => ['required', 'max:255'],
+            'email' => ['required', 'email:dns', 'unique:users'],
+            'password' => ['required', 'min:8'],
+            'leave_limit' => ['required', 'numeric']
+        ]);
+
+        $validatedData['password'] = Hash::make($validatedData['password']);
+
+        User::create($validatedData);
+        return redirect('/dashboard/daftar-karyawan')->with('success', 'Anda Berhasil Menambah Karyawan!');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\DaftarKaryawan  $daftarKaryawan
-     * @return \Illuminate\Http\Response
-     */
-    public function show(DaftarKaryawan $daftarKaryawan)
+    public function edit(User $user)
     {
-        //
+        $this->authorize('admin');
+        $user = $user;
+        $title = 'Edit';
+        $head = 'Edit Karyawan';
+        return view('Register', compact('title', 'user', 'head'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\DaftarKaryawan  $daftarKaryawan
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(DaftarKaryawan $daftarKaryawan)
+    public function update(Request $request)
     {
-        //
+        $this->authorize('admin');
+        $validatedData = $request->validate([
+            'name' => ['required'],
+            'email' => ['required', 'email:dns'],
+            'leave_limit' => ['required', 'numeric']
+        ]);
+
+        User::where('email', $validatedData['email'])->update($validatedData);
+        return redirect('/dashboard/daftar-karyawan')->with('success', 'Anda Berhasil Edit Karyawan!');
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\DaftarKaryawan  $daftarKaryawan
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, DaftarKaryawan $daftarKaryawan)
+    public function destroy(User $user)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\DaftarKaryawan  $daftarKaryawan
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(DaftarKaryawan $daftarKaryawan)
-    {
-        //
+        $this->authorize('admin');
+        User::destroy($user->id);
+        return redirect('/dashboard/daftar-karyawan')->with('success', 'Anda Berhasil Menghapus Karyawan!');
     }
 }
