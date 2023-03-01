@@ -36,6 +36,7 @@ Route::middleware('admin')->group(function () {
     Route::get('/dashboard/daftar-karyawan/edit/{user:email}', [DaftarKaryawanController::class, 'edit']);
     Route::put('/dashboard/register', [DaftarKaryawanController::class, 'update']);
     Route::get('/dashboard/riwayat-absen', [RiwayatAbsenController::class, 'index']);
+    Route::get('/dashboard/riwayat-absen/filter', [RiwayatAbsenController::class, 'filter']);
     Route::get('/dashboard/pulang-awal', [PulangAwalController::class, 'index']);
     Route::post('/dashboard/pulang-awal/approve/{attendance:uuid}', [PulangAwalController::class, 'approve']);
     Route::post('/dashboard/pulang-awal/reject/{attendance:uuid}', [PulangAwalController::class, 'reject']);

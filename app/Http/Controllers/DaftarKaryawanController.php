@@ -14,7 +14,13 @@ class DaftarKaryawanController extends Controller
     {
         $this->authorize('admin');
 
-        $users = User::all();
+        if (request('search')) {
+            $users = User::where('name', 'like', '%' . request('search') . '%')->orWhere('email', 'like', '%' . request('search') . '%')->paginate(6);
+        } else {
+            $users = User::paginate(6);
+        }
+        
+
         $title = 'Daftar Karyawan';
 
         return view('DaftarKaryawan', compact('users', 'title'));

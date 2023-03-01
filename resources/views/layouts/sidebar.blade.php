@@ -31,7 +31,7 @@
                                 Daftar Cuti / Sakit
                             </a>
                             <a href="/dashboard/riwayat-absen"
-                                class="flex items-center {{ Request::is('dashboard/riwayat-absen') ? 'bg-yellow-200' : '' }} rounded-xl font-bold text-sm text-yellow-900 py-3 px-4">
+                                class="flex items-center {{ Request::is('dashboard/riwayat-absen') || Request::is('dashboard/riwayat-absen/filter') ? 'bg-yellow-200' : '' }} rounded-xl font-bold text-sm text-yellow-900 py-3 px-4">
                                 Riwayat Absen
                             </a>
                             <a href="/dashboard/daftar-karyawan"

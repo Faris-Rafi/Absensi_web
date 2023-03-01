@@ -16,16 +16,30 @@ class RiwayatAbsenController extends Controller
         $this->authorize('admin');
         $timeNow = Carbon::now('Asia/Jakarta');
 
-        $attendances = Attendance::where('status', '1')->latest()->get();
-        $attendanceMonths = Attendance::distinct('month')->pluck('month');
+        $attendances = Attendance::where('status', '1')->latest()->paginate(6,['*'], 'attendances');
+
+        $attendanceTodays = Attendance::where('status', '1')->where('date', $timeNow->format('d-m-Y'))->latest()->paginate(6,['*'], 'attendanceTodays');
+
+        $months = collect([]);
+        for ($i = 1; $i <= 12; $i++) {
+            $month = \Carbon\Carbon::create(null, $i, 1)->format('F');
+            $months->push($month);
+        }
+
+        $monthsNum = collect([]);
+        foreach ($months as $month) {
+            $monthNum = \Carbon\Carbon::parse($month)->format('m');
+            $monthsNum->push($monthNum);
+        }
+
         $attendanceYears = Attendance::distinct('year')->pluck('year');
 
         $users = User::all();
-        $missings = Missing::all();
+        $missings = Missing::latest()->paginate(6, ['*'], 'missings');
 
         $title = 'Riwayat Absen';
 
-        return view('RiwayatAbsen', compact('title', 'attendances', 'users', 'timeNow', 'missings', 'attendanceMonths', 'attendanceYears'));
+        return view('RiwayatAbsen', compact('title', 'attendances', 'attendanceTodays', 'users', 'timeNow', 'missings', 'months', 'monthsNum', 'attendanceYears'));
     }
 
     public function Filter(Request $request)
@@ -33,28 +47,47 @@ class RiwayatAbsenController extends Controller
         $this->authorize('admin');
         $timeNow = Carbon::now('Asia/Jakarta');
 
-        $attendances = Attendance::where('status', 1);
+        $missing = Missing::query();
+        $query = Attendance::query();
 
-        if ($request->has('nameFilter')) {
-            $attendances->where('user_id', $request->input('nameFilter'));
-        }
-        if ($request->has('yearFilter')) {
-            $attendances->where('year', $request->input('yearFilter'));
-        }
-        if ($request->has('dateFilter')) {
-            $attendances->where('month', $request->input('dateFilter'));
+        if ($request->has('email')) {
+            $userFilter = User::where('email', 'like', $request->input('email'))->first();
+            $query->where('user_id', $userFilter->id);
+            $missing->where('user_id', $userFilter->id);
         }
 
-        $attendances = $attendances->latest()->get();
+        if ($request->has('year')) {
+            $query->where('year', $request->input('year'));
+        }
 
-        $attendanceMonths = Attendance::distinct('month')->pluck('month');
+        if ($request->has('month')) {
+            $query->where('month', $request->input('month'));
+        }
+
+        $attendances = $query->where('status', 1)->latest()->paginate(6,['*'], 'attendances');
+
+        $attendanceTodays = $query->where('status', '1')->where('date', $timeNow->format('d-m-Y'))->latest()->paginate(6, ['*'], 'attendanceTodays');
+        
+        $missings = $missing->paginate(6, ['*'], 'missings');
+
+        $months = collect([]);
+        for ($i = 1; $i <= 12; $i++) {
+            $month = \Carbon\Carbon::create(null, $i, 1)->format('F');
+            $months->push($month);
+        }
+
+        $monthsNum = collect([]);
+        foreach ($months as $month) {
+            $monthNum = \Carbon\Carbon::parse($month)->format('m');
+            $monthsNum->push($monthNum);
+        }
+
         $attendanceYears = Attendance::distinct('year')->pluck('year');
 
         $users = User::all();
-        $missings = Missing::all();
 
         $title = 'Riwayat Absen';
 
-        return view('RiwayatAbsen', compact('title', 'attendances', 'users', 'timeNow', 'missings', 'attendanceMonths', 'attendanceYears'));
+        return view('RiwayatAbsen', compact('title', 'attendances', 'attendanceTodays', 'users', 'timeNow', 'missings', 'months', 'monthsNum', 'attendanceYears'));
     }
 }
