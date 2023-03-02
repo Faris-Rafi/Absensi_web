@@ -4,7 +4,7 @@
     <div class="bg-white rounded-3xl p-8 mb-5">
         <h1 class="text-3xl font-bold text-center mb-10">Form Cuti / Sakit</h1>
         <div class="flex justify-center items-center w-full">
-            <form action="/dashboard/cuti-sakit" method="post" class="w-1/2">
+            <form action="/dashboard/cuti-sakit" method="post" class="sm:w-1/2">
                 @csrf
                 <div class="relative mt-8">
                     <input type="text" id="name" class="peer placeholder-transparent h-10 border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600 w-full" value="{{ auth()->user()->name }}" disabled>

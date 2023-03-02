@@ -46,7 +46,7 @@ class KaryawanCutiController extends Controller
         $requests = ModelsRequest::all();
         $title = 'Riwayat Cuti';
 
-        return view('RiwayatCuti', compact('title', 'requests', 'timeNow'));
+        return view('RiwayatCuti.Main', compact('title', 'requests', 'timeNow'));
     }
 
     public function update(ModelsRequest $modelsRequest)

@@ -1,12 +1,12 @@
 @extends('Profile.layouts.main')
 
 @section('profileSection')
-    <h1 class="text-3xl font-bold text-center my-5">History Absen</h1>
+    <h1 class="text-3xl font-bold text-center my-5">Riwayat Absen</h1>
     <div class="flex flex-col">
         <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div class="py-2 inline-block min-w-full sm:px-6 lg:px-8">
                 <div class="overflow-hidden">
-                    <table class="min-w-full">
+                    <table class="min-w-full" id="absenTable">
                         <thead class="border-b border-black text-center">
                             <tr>
                                 <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4">
@@ -85,12 +85,13 @@
             </div>
         </div>
     </div>
-    <h1 class="text-3xl font-bold text-center mt-20 mb-5">History Cuti</h1>
+    
+    <h1 class="text-3xl font-bold text-center mt-20 mb-5">Riwayat Cuti</h1>
     <div class="flex flex-col">
         <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div class="py-2 inline-block min-w-full sm:px-6 lg:px-8">
                 <div class="overflow-hidden">
-                    <table class="min-w-full">
+                    <table class="min-w-full" id="cutiTable">
                         <thead class="border-b border-black text-center">
                             <tr>
                                 <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4">
@@ -144,4 +145,8 @@
                 </div>
             </div>
         </div>
+        <script>
+            let absenTable = new DataTable('#absenTable')
+            let cutiTable = new DataTable('#cutiTable')
+        </script>
     @endsection

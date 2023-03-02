@@ -1,6 +1,11 @@
 @extends('layouts.main')
 
 @section('section')
+    @if (session()->has('success'))
+    <div class="w-full bg-green-600 text-center text-white">
+        {{ session('success') }}
+    </div>
+    @endif
     <div class="bg-white rounded-3xl p-8 mb-5">
         <h1 class="text-3xl font-bold text-center mb-5">Welcome, {{ auth()->user()->name }}!</h1>
         @if ($user->request_type_id === 1 || $user->request_type_id === 3)
@@ -41,6 +46,6 @@
             });
             document.getElementById('timeNow').innerHTML = `Waktu Sekarang : ${time}`;
         }
-        setInterval(displayTime, 1);
+        setInterval(displayTime, 1000);
     </script>
 @endsection

@@ -33,7 +33,7 @@ class DailyCutiCheck extends Command
         $today = Carbon::now()->format('d-m-Y');
         $requests = Request::all();
         foreach ($requests as $request) {
-            if ($request->end_date == $today) {
+            if ($request->end_date >= $today) {
                 User::where('id', $request->user_id)->update([
                     'request_type_id' => null
                 ]);

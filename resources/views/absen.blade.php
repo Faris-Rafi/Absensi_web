@@ -5,7 +5,7 @@
         @if ($user->attendance->isEmpty())
             <h1 class="text-3xl font-bold text-center mb-10">Form Absen</h1>
             <div class="flex justify-center items-center w-full">
-                <form action="/dashboard/absen/masuk" method="post" class="w-1/2">
+                <form action="/dashboard/absen/masuk" method="post" class="sm:w-1/2">
                     @csrf
                     <div class="relative mt-8">
                         <input type="text" id="name"

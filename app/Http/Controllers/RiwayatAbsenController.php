@@ -16,9 +16,9 @@ class RiwayatAbsenController extends Controller
         $this->authorize('admin');
         $timeNow = Carbon::now('Asia/Jakarta');
 
-        $attendances = Attendance::where('status', '1')->latest()->paginate(6,['*'], 'attendances');
+        $attendances = Attendance::where('status', '1')->latest()->get();
 
-        $attendanceTodays = Attendance::where('status', '1')->where('date', $timeNow->format('d-m-Y'))->latest()->paginate(6,['*'], 'attendanceTodays');
+        $attendanceTodays = Attendance::where('status', '1')->where('date', $timeNow->format('d-m-Y'))->latest()->get();
 
         $months = collect([]);
         for ($i = 1; $i <= 12; $i++) {
@@ -34,12 +34,11 @@ class RiwayatAbsenController extends Controller
 
         $attendanceYears = Attendance::distinct('year')->pluck('year');
 
-        $users = User::all();
-        $missings = Missing::latest()->paginate(6, ['*'], 'missings');
+        $missings = Missing::latest()->get();
 
         $title = 'Riwayat Absen';
 
-        return view('RiwayatAbsen', compact('title', 'attendances', 'attendanceTodays', 'users', 'timeNow', 'missings', 'months', 'monthsNum', 'attendanceYears'));
+        return view('RiwayatAbsen.Main', compact('title', 'attendances', 'attendanceTodays', 'timeNow', 'missings', 'months', 'monthsNum', 'attendanceYears'));
     }
 
     public function Filter(Request $request)
@@ -47,14 +46,9 @@ class RiwayatAbsenController extends Controller
         $this->authorize('admin');
         $timeNow = Carbon::now('Asia/Jakarta');
 
-        $missing = Missing::query();
+        $attendanceTodays = Attendance::where('status', '1')->where('date', $timeNow->format('d-m-Y'))->latest()->get();
+        $missings = Missing::latest()->get();
         $query = Attendance::query();
-
-        if ($request->has('email')) {
-            $userFilter = User::where('email', 'like', $request->input('email'))->first();
-            $query->where('user_id', $userFilter->id);
-            $missing->where('user_id', $userFilter->id);
-        }
 
         if ($request->has('year')) {
             $query->where('year', $request->input('year'));
@@ -64,11 +58,7 @@ class RiwayatAbsenController extends Controller
             $query->where('month', $request->input('month'));
         }
 
-        $attendances = $query->where('status', 1)->latest()->paginate(6,['*'], 'attendances');
-
-        $attendanceTodays = $query->where('status', '1')->where('date', $timeNow->format('d-m-Y'))->latest()->paginate(6, ['*'], 'attendanceTodays');
-        
-        $missings = $missing->paginate(6, ['*'], 'missings');
+        $attendances = $query->where('status', 1)->latest()->get();
 
         $months = collect([]);
         for ($i = 1; $i <= 12; $i++) {
@@ -84,10 +74,8 @@ class RiwayatAbsenController extends Controller
 
         $attendanceYears = Attendance::distinct('year')->pluck('year');
 
-        $users = User::all();
-
         $title = 'Riwayat Absen';
 
-        return view('RiwayatAbsen', compact('title', 'attendances', 'attendanceTodays', 'users', 'timeNow', 'missings', 'months', 'monthsNum', 'attendanceYears'));
+        return view('RiwayatAbsen.Main', compact('title', 'attendances', 'attendanceTodays', 'timeNow', 'missings', 'months', 'monthsNum', 'attendanceYears'));
     }
 }
