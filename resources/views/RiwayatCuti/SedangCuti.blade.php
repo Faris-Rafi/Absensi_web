@@ -27,12 +27,13 @@
                         </tr>
                     </thead>
                     <tbody class="text-center">
+                        @php $count = 1 @endphp
                         @foreach ($requests as $request)
                             @if ($request->status === 1)
                                 <tr class="border-b">
                                     <td
                                         class="border-r border-black px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        {{ $loop->index }}</td>
+                                        {{ $count }}</td>
                                     <td
                                         class="text-sm border-r border-black text-gray-900 font-light px-6 py-4 whitespace-nowrap">
                                         {{ $request->user->name }}
@@ -53,6 +54,7 @@
                                         {{ $request->reason }}
                                     </td>
                                 </tr>
+                                @php $count++ @endphp
                             @endif
                         @endforeach
                     </tbody>

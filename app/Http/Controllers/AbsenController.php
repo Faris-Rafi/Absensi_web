@@ -31,10 +31,11 @@ class AbsenController extends Controller
         ])->where('id', $auth)->orderBy('created_at')->first();
 
         $locations = Location::where('status', 1)->get();
+        $attendances = Attendance::where('status', '0')->where('user_id', auth()->user()->id)->latest()->get();
 
         $title = 'Absen';
 
-        return view('Absen', compact('title', 'user', 'locations', 'timeNow', 'timeOut', 'timeLimit'));
+        return view('Absen', compact('title', 'user', 'attendances', 'locations', 'timeNow', 'timeOut', 'timeLimit'));
     }
 
     /**

@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Attendance;
+use App\Models\Missing;
+use App\Models\Request as ModelsRequest;
 use Illuminate\Support\Facades\Hash;
 
 class DaftarKaryawanController extends Controller
@@ -77,6 +80,9 @@ class DaftarKaryawanController extends Controller
     {
         $this->authorize('admin');
         User::destroy($user->id);
+        Attendance::where('user_id', '=', $user->id)->delete();
+        Missing::where('user_id', '=', $user->id)->delete();
+        ModelsRequest::where('user_id', '=', $user->id)->delete();
         return redirect('/dashboard/daftar-karyawan')->with('success', 'Anda Berhasil Menghapus Karyawan!');
     }
 }

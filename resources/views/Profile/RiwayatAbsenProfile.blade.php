@@ -69,8 +69,7 @@
                                             {{ $attendance->presenceType->name }}
                                         </td>
                                     @else
-                                    <td
-                                            class="text-sm border-r border-black font-light px-6 py-4 whitespace-nowrap">
+                                        <td class="text-sm border-r border-black font-light px-6 py-4 whitespace-nowrap">
                                             -
                                         </td>
                                     @endif
@@ -85,7 +84,7 @@
             </div>
         </div>
     </div>
-    
+
     <h1 class="text-3xl font-bold text-center mt-20 mb-5">Riwayat Cuti</h1>
     <div class="flex flex-col">
         <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -111,35 +110,29 @@
                                 </th>
                             </tr>
                         </thead>
-                        <tbody class="text-center" >
-                            @if ($requests->count() === 0)
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" colspan="5">TIDAK ADA DATA</td>
+                        <tbody class="text-center">
+                            @foreach ($requests as $request)
+                                <tr class="border-b">
+                                    <td
+                                        class="border-r border-black px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        {{ $loop->iteration }}</td>
+                                    <td
+                                        class="text-sm border-r border-black text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                        {{ $request->start_date }}
+                                    </td>
+                                    <td
+                                        class="text-sm border-r border-black text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                        {{ $request->end_date }}
+                                    </td>
+                                    <td
+                                        class="text-sm border-r border-black text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                        {{ $request->requestType->name }}
+                                    </td>
+                                    <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                        {{ $request->reason }}
+                                    </td>
                                 </tr>
-                            @else
-                                @foreach ($requests as $request)
-                                    <tr class="border-b">
-                                        <td
-                                            class="border-r border-black px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                            {{ $loop->iteration }}</td>
-                                        <td
-                                            class="text-sm border-r border-black text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                            {{ $request->start_date }}
-                                        </td>
-                                        <td
-                                            class="text-sm border-r border-black text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                            {{ $request->end_date }}
-                                        </td>
-                                        <td
-                                            class="text-sm border-r border-black text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                            {{ $request->requestType->name }}
-                                        </td>
-                                        <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                            {{ $request->reason }}
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            @endif
+                            @endforeach
                         </tbody>
                     </table>
                 </div>

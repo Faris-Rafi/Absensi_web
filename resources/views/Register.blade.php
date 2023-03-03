@@ -38,13 +38,15 @@
                 <div class="relative mt-8">
                     <input autocomplete="off" id="leave_limit" name="leave_limit" type="text"
                         class="peer placeholder-transparent h-10 border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600 w-full"
-                        placeholder="leave_limit" value="@if(isset($user)){{ $user->leave_limit }}@endif" required />
+                        placeholder="leave_limit" value="@if (isset($user)) {{ $user->leave_limit }} @endif"
+                        required />
                     <label for="leave_limit"
                         class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Batas
                         Cuti</label>
                 </div>
                 <div class="relative my-5">
-                    <button class="bg-blue-500 text-white rounded-md px-2 py-1 w-full">Submit</button>
+                    <button
+                        class="bg-blue-500 hover:bg-blue-700 transition text-white rounded-md px-2 py-1 w-full">Submit</button>
                 </div>
             </form>
         </div>

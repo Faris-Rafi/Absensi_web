@@ -15,9 +15,10 @@ class KaryawanCutiController extends Controller
     public function index()
     {
         $request_types = RequestType::all();
+        $requests = ModelsRequest::where('user_id', auth()->user()->id)->where('status', 0)->get();
         $title = 'Pengajuan Cuti';
 
-        return view('KaryawanCuti', compact('title', 'request_types'));
+        return view('KaryawanCuti', compact('title', 'request_types', 'requests'));
     }
 
     public function store(Request $request)

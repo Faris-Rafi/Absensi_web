@@ -15,8 +15,8 @@ class PulangAwalController extends Controller
     {
         $this->authorize('admin');
         $timeNow = Carbon::now('Asia/Jakarta');
-        $attendances = Attendance::with('user', 'location', 'presenceType', 'arrivalType')->where('status', '0')->latest()->get();
-        $users = User::with('attendance')->get();
+        $attendances = Attendance::where('status', '0')->latest()->get();
+        $users = User::all();
 
         $title = 'Pulang Awal';
 
@@ -32,7 +32,7 @@ class PulangAwalController extends Controller
         $clock_in = strtotime(date('H:i', strtotime($attendance->clock_in)));
         $clock_out = strtotime($timeNow->format('H:i'));
 
-        $working_time = $sysconf->value;
+        $working_time = $sysconf;
 
         $diff = abs($clock_out - $clock_in) / 60;
         $late_duration = $working_time - $diff;

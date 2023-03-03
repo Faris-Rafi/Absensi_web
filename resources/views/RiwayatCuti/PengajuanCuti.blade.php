@@ -62,14 +62,14 @@
                                             method="post">
                                             @csrf
                                             <button
-                                                class="bg-green-900 text-green-200 p-2 font-semibold rounded-md mr-1">Approve</button>
+                                                class="bg-green-500 hover:bg-green-700 transition text-white p-2 font-semibold rounded-md mr-1">Approve</button>
                                         </form>
                                         <form action="/dashboard/pengajuan-cuti-sakit/reject/{{ $request->uuid }}"
                                             method="post">
                                             @method('delete')
                                             @csrf
                                             <button
-                                                class="bg-red-900 text-red-200 p-2 font-semibold rounded-md ml-1">Reject</button>
+                                                class="bg-red-500 hover:bg-red-700 transition text-white p-2 font-semibold rounded-md ml-1">Reject</button>
                                         </form>
                                     </td>
                                 </tr>

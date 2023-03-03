@@ -7,7 +7,7 @@
             <div class="flex justify-center items-center mb-8 w-full">
                 <a href="/dashboard/profile"
                     class="mx-5 font-medium border-b-2 border-b-gray-500 hover:border-blue-600">Profile</a>
-                <a href="/dashboard/profile/riwayat" class="mx-5 font-medium border-b-2 border-b-gray-500 hover:border-blue-600">History
+                <a href="/dashboard/profile/riwayat" class="mx-5 font-medium border-b-2 border-b-gray-500 hover:border-blue-600">Riwayat
                     Absen</a>
             </div>
         </div>
