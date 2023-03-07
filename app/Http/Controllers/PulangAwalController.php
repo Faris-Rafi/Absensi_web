@@ -8,6 +8,7 @@ use App\Models\Absen;
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
 use App\Models\Sysconf;
+use Carbon\CarbonInterval;
 
 class PulangAwalController extends Controller
 {
@@ -45,26 +46,29 @@ class PulangAwalController extends Controller
             $presence = 3;
         }
 
+        $interval = CarbonInterval::minutes($diff);
+        $work_duration = $interval->cascade()->format('%h hours %i minutes');
+
         Attendance::where('key', $attendance->key)->update([
             'status' => 1,
             'clock_out' => $timeNow->format('H:i:s'),
-            'work_duration' => $diff . ' Menit',
-            'late_duration' => $late_duration . ' Menit',
+            'work_duration' => $work_duration,
+            'late_duration' => $late_duration . ' minutes',
             'presence_type_id' => $presence,
-            'arrival_type_id' => 3
+            'arrival_type_id' => 3,
+            'request_status_id' => 2
         ]);
-        return redirect('/dashboard')->with('success', 'Pengajuan diterima');
-        
+        return redirect('/dashboard/pulang-awal')->with('success', 'Pengajuan diterima');
     }
 
     public function reject(Attendance $attendance)
     {
         $this->authorize('admin');
         Attendance::where('key', $attendance->key)->update([
-            'reason' => null,
-            'status' => 1
+            'notes' => null,
+            'status' => 1,
+            'request_status_id' => 3
         ]);
-        return redirect('/dashboard')->with('success', 'Pengajuan ditolak');
-        
+        return redirect('/dashboard/pulang-awal')->with('success', 'Pengajuan ditolak');
     }
 }

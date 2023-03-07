@@ -22,4 +22,9 @@ class Request extends Model
     {
         return $this->belongsTo(RequestType::class);
     }
+
+    public function requestStatus()
+    {
+        return $this->belongsTo(RequestStatus::class);
+    }
 }

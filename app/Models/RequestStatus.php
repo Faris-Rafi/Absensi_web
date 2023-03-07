@@ -2,11 +2,10 @@
 
 namespace App\Models;
 
-use App\Models\User;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
-class RequestType extends Model
+class RequestStatus extends Model
 {
     use HasFactory;
 
@@ -15,9 +14,8 @@ class RequestType extends Model
         return $this->hasMany(Request::class);
     }
 
-    public function user()
+    public function attendance()
     {
-        return $this->hasMany(User::class);
+        return $this->hasMany(Attendance::class);
     }
-
 }

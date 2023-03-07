@@ -32,4 +32,9 @@ class Attendance extends Model
     {
         return $this->belongsTo(ArrivalType::class);
     }
+
+    public function requestStatus()
+    {
+        return $this->belongsTo(RequestStatus::class);
+    }
 }

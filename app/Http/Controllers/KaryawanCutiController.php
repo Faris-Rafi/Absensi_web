@@ -15,7 +15,7 @@ class KaryawanCutiController extends Controller
     public function index()
     {
         $request_types = RequestType::all();
-        $requests = ModelsRequest::where('user_id', auth()->user()->id)->where('status', 0)->get();
+        $requests = ModelsRequest::where('user_id', auth()->user()->id)->where('status', '!=', 2)->latest()->get();
         $title = 'Pengajuan Cuti';
 
         return view('KaryawanCuti', compact('title', 'request_types', 'requests'));
@@ -34,6 +34,14 @@ class KaryawanCutiController extends Controller
         $validatedData['start_date'] = date('d-m-Y', strtotime($request->start_date));
         $validatedData['end_date'] = date('d-m-Y', strtotime($request->end_date));
         $validatedData['uuid'] = Str::orderedUuid();
+
+        $startDate = Carbon::parse($validatedData['start_date']);
+        $endDate = Carbon::parse($validatedData['end_date']);
+
+        $diffInDays = $endDate->diffInDays($startDate);
+
+        $validatedData['duration'] = $diffInDays . ' Hari';
+        $validatedData['request_status_id'] = 1;
 
         ModelsRequest::create($validatedData);
 
@@ -65,17 +73,22 @@ class KaryawanCutiController extends Controller
         ]);
 
         ModelsRequest::where('uuid', $modelsRequest->uuid)->update([
-            'status' => 1
+            'status' => 1,
+            'request_status_id' => 2,
         ]);
 
-        return redirect('/dashboard')->with('success', 'Pengajuan Diterima');
+        return redirect('/dashboard/pengajuan-cuti-sakit')->with('success', 'Pengajuan Diterima!');
     }
 
-    public function destroy(ModelsRequest $modelsRequest)
+    public function reject(ModelsRequest $modelsRequest)
     {
         $this->authorize('admin');
-        ModelsRequest::destroy($modelsRequest->id);
 
-        return redirect('/dashboard')->with('success', 'Pengajuan Ditolak');
+        ModelsRequest::where('uuid', $modelsRequest->uuid)->update([
+            'status' => 2,
+            'request_status_id' => 3,
+        ]);
+
+        return redirect('/dashboard/pengajuan-cuti-sakit')->with('success', 'Pengajuan Ditolak!');
     }
 }

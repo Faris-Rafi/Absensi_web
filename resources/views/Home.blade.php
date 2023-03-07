@@ -2,8 +2,10 @@
 
 @section('section')
     @if (session()->has('success'))
-        <div class="w-full bg-green-600 text-center text-white">
-            {{ session('success') }}
+        <div id="modalSuccess" data-izimodal-title="{{ session('success') }}">
+        </div>
+    @elseif (session()->has('error'))
+        <div id="modalError" data-izimodal-title="{{ session('error') }}">
         </div>
     @endif
     <div class="bg-white rounded-3xl p-8 mb-5">
@@ -32,7 +34,9 @@
             @if ($user->attendance->count() == 0)
                 <div class="p-4 text-center">
                     <p class="mb-5">Anda Belum Absen</p>
-                    <a href="/dashboard/absen" class="bg-blue-500 hover:bg-blue-700 transition text-white p-2 rounded-lg text-sm">Absen Sekarang</a>
+                    <a href="/dashboard/absen"
+                        class="bg-blue-500 hover:bg-blue-700 transition text-white p-2 rounded-lg text-sm">Absen
+                        Sekarang</a>
                 </div>
             @else
                 <div class="p-4 text-center">
@@ -42,6 +46,27 @@
         @endif
     </div>
     <script>
+        $(document).ready(function() {
+            $('#modalSuccess').iziModal({
+                autoOpen: true,
+                headerColor: '#4FB748',
+                overlayColor: 'rgba(0, 0, 0, 0.5)',
+                top: '0',
+            });
+
+            $('#modalError').iziModal({
+                autoOpen: true,
+                headerColor: '#EF4444',
+                overlayColor: 'rgba(0, 0, 0, 0.5)',
+                top: '0',
+            });
+
+            setTimeout(function() {
+                $('#modalSuccess').iziModal('close');
+                $('#modalError').iziModal('close');
+            }, 3000);
+        });
+
         const displayTime = () => {
             const date = new Date();
             const time = date.toLocaleTimeString('en-US', {

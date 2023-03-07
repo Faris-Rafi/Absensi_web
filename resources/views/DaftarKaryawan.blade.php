@@ -2,8 +2,10 @@
 
 @section('section')
     @if (session()->has('success'))
-        <div class="w-full bg-green-600 text-center text-white">
-            {{ session('success') }}
+        <div id="modalSuccess" data-izimodal-title="{{ session('success') }}">
+        </div>
+    @elseif (session()->has('error'))
+        <div id="modalError" data-izimodal-title="{{ session('error') }}">
         </div>
     @endif
     <div class="bg-white rounded-3xl p-8 mb-5">
@@ -52,13 +54,10 @@
                                             {{ $user['leave_limit'] }}
                                         </td>
                                         <td class="text-sm flex justify-center font-semibold px-6 py-4 whitespace-nowrap">
-                                            <form action="/dashboard/daftar-karyawan/{{ $user->email }}" method="post">
-                                                @method('delete')
-                                                @csrf
-                                                <button type="submit"
-                                                    class="bg-red-500 hover:bg-red-700 transition text-white p-2 mx-2 rounded-lg"
-                                                    onclick="return confirm('Are you sure?')">Delete</button>
-                                            </form>
+                                            <button
+                                                class="bg-red-500 hover:bg-red-700 transition text-white p-2 mx-2 rounded-lg"
+                                                data-izimodal-open="#modal" data-izimodal-transitionin="bounceInDown"
+                                                data-email={{ $user->email }} id="deleteButton">Delete</button>
                                             <a href="/dashboard/daftar-karyawan/edit/{{ $user->email }}"
                                                 class="bg-green-500 hover:bg-green-700 transition text-white p-2 mx-2 rounded-lg">Edit</a>
                                         </td>
@@ -70,11 +69,53 @@
                 </div>
             </div>
         </div>
-        <div class="flex justify-center items-center">
-            {{ $users->links('pagination::simple-tailwind') }}
+    </div>
+    <div id="modal" data-izimodal-title="Verifikasi Nama"
+        data-izimodal-subtitle="Masukkan nama user yang ingin dihapus">
+        <div class="flex justify-center items-center py-10">
+            <form action="" method="post" class="w-1/2" id="form-modal">
+                @method('delete')
+                @csrf
+                <input autocomplete="off" id="nama" name="name" type="text"
+                    class="py-2 px-3 mb-5 mt-2 rounded border border-gray-300 focus:border-blue-500 w-full"
+                    placeholder="Masukkan Nama User...." />
+                <button type="submit" class="bg-blue-500 rounded-full py-1 px-2 text-white w-full">Submit</button>
+            </form>
         </div>
     </div>
+
     <script>
         let karyawanTable = new DataTable('#karyawanTable')
+        $("#modal").iziModal({
+            headerColor: '#FDE69A',
+            theme: 'light',
+            padding: 20,
+        });
+        $(document).on('click', '#deleteButton', function(event) {
+            const email = $(this).data('email');
+            event.preventDefault();
+            $('#modal').iziModal('open');
+            $('#form-modal').attr('action', '/dashboard/daftar-karyawan/' + email);
+        });
+        $(document).ready(function() {
+            $('#modalSuccess').iziModal({
+                autoOpen: true,
+                headerColor: '#4FB748',
+                overlayColor: 'rgba(0, 0, 0, 0.5)',
+                top: '0',
+            });
+
+            $('#modalError').iziModal({
+                autoOpen: true,
+                headerColor: '#EF4444',
+                overlayColor: 'rgba(0, 0, 0, 0.5)',
+                top: '0',
+            });
+
+            setTimeout(function() {
+                $('#modalSuccess').iziModal('close');
+                $('#modalError').iziModal('close');
+            }, 3000);
+        });
     </script>
 @endsection

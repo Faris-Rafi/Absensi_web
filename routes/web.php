@@ -11,7 +11,7 @@ use App\Http\Controllers\RiwayatAbsenController;
 use App\Http\Controllers\DaftarKaryawanController;
 
 Route::middleware('guest')->group(function () {
-    Route::get('/', [LoginController::class, 'index']);
+    Route::get('/', [LoginController::class, 'index'])->name('login');
     Route::post('/', [LoginController::class, 'authenticate']);
 });
 
@@ -26,6 +26,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/profile', [ProfileController::class, 'index']);
     Route::put('/dashboard/profile/update', [ProfileController::class, 'update']);
     Route::get('/dashboard/profile/riwayat', [ProfileController::class, 'show']);
+    Route::post('/logout', [LoginController::class, 'logout']);
 });
 
 Route::middleware('admin')->group(function () {
@@ -42,8 +43,10 @@ Route::middleware('admin')->group(function () {
     Route::post('/dashboard/pulang-awal/reject/{attendance:uuid}', [PulangAwalController::class, 'reject']);
     Route::get('/dashboard/pengajuan-cuti-sakit', [KaryawanCutiController::class, 'show']);
     Route::post('/dashboard/pengajuan-cuti-sakit/approve/{modelsRequest:uuid}', [KaryawanCutiController::class, 'update']);
-    Route::delete('/dashboard/pengajuan-cuti-sakit/reject/{modelsRequest:uuid}', [KaryawanCutiController::class, 'destroy']);
+    Route::delete('/dashboard/pengajuan-cuti-sakit/reject/{modelsRequest:uuid}', [KaryawanCutiController::class, 'reject']);
     Route::get('/dashboard/riwayat-absen/filter/{userId?}/{year?}/{date?}', [RiwayatAbsenController::class, 'Filter']);
 });
 
-Route::post('/logout', [LoginController::class, 'logout']);
+Route::fallback(function () {
+    return redirect('/');
+});

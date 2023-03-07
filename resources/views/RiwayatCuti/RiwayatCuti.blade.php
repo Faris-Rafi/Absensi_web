@@ -1,4 +1,4 @@
-<h1 class="text-3xl font-bold text-center mb-5">Riwayat</h1>
+<h1 class="text-3xl font-bold text-center mb-5">Riwayat Semua Cuti</h1>
 <div class="flex flex-col">
     <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div class="py-2 inline-block min-w-full sm:px-6 lg:px-8">
@@ -19,10 +19,16 @@
                                 Tanggal Selesai
                             </th>
                             <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4">
-                                Status
+                                Durasi
+                            </th>
+                            <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4">
+                                Pengajuan
                             </th>
                             <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4">
                                 Alasan
+                            </th>
+                            <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4">
+                                Status
                             </th>
                         </tr>
                     </thead>
@@ -48,11 +54,25 @@
                                     </td>
                                     <td
                                         class="text-sm border-r border-black text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                        {{ $request->duration }}
+                                    </td>
+                                    <td
+                                        class="text-sm border-r border-black text-gray-900 font-light px-6 py-4 whitespace-nowrap">
                                         {{ $request->requestType->name }}
                                     </td>
-                                    <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                                    <td
+                                        class="text-sm border-r border-black text-gray-900 font-light px-6 py-4 whitespace-nowrap">
                                         {{ $request->reason }}
                                     </td>
+                                    @if ($request->request_status_id === 2)
+                                        <td class="text-sm bg-green-500 text-white font-light px-6 py-4 whitespace-nowrap">
+                                            {{ $request->requestStatus->name }}
+                                        </td>
+                                    @else
+                                        <td class="text-sm bg-red-500 text-white font-light px-6 py-4 whitespace-nowrap">
+                                            {{ $request->requestStatus->name }}
+                                        </td>
+                                    @endif
                                 </tr>
                             @endif
                         @endforeach

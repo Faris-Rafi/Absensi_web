@@ -73,16 +73,22 @@ class DaftarKaryawanController extends Controller
         ]);
 
         User::where('email', $validatedData['email'])->update($validatedData);
-        return redirect('/dashboard/daftar-karyawan')->with('success', 'Anda Berhasil Edit Karyawan!');
+        return redirect('/dashboard/daftar-karyawan')->with('success', 'Anda Berhasil Mengedit Karyawan!');
     }
 
-    public function destroy(User $user)
+    public function destroy(User $user, Request $request)
     {
         $this->authorize('admin');
-        User::destroy($user->id);
-        Attendance::where('user_id', '=', $user->id)->delete();
-        Missing::where('user_id', '=', $user->id)->delete();
-        ModelsRequest::where('user_id', '=', $user->id)->delete();
-        return redirect('/dashboard/daftar-karyawan')->with('success', 'Anda Berhasil Menghapus Karyawan!');
+        $name = $request->input('name');
+        $user = User::where('name', $name)->first();
+        if ($user) {
+            Attendance::where('user_id', '=', $user->id)->delete();
+            Missing::where('user_id', '=', $user->id)->delete();
+            ModelsRequest::where('user_id', '=', $user->id)->delete();
+            $user->delete();
+            return redirect('/dashboard/daftar-karyawan')->with('success', 'Anda Berhasil Menghapus Karyawan!');
+        } else {
+            return redirect('/dashboard/daftar-karyawan')->with('error', 'Nama karyawan tidak sesuai!');
+        }
     }
 }

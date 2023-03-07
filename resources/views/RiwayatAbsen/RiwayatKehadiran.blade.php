@@ -25,13 +25,13 @@
                                 Durasi Bekerja
                             </th>
                             <th>
-                                Durasi Telat
-                            </th>
-                            <th>
                                 Lokasi
                             </th>
                             <th>
                                 Keterangan
+                            </th>
+                            <th>
+                                Catatan
                             </th>
                             <th>
                                 Status
@@ -40,71 +40,59 @@
                     </thead>
                     <tbody class="text-center">
                         @foreach ($attendances as $attendance)
-                            <tr >
-                                <td
-                                    >
+                            <tr>
+                                <td>
                                     {{ $loop->iteration }}</td>
-                                <td
-                                    >
+                                <td>
                                     {{ $attendance->user->name }}
                                 </td>
-                                <td
-                                    >
+                                <td>
                                     {{ $attendance->date }}
                                 </td>
-                                <td
-                                    >
+                                <td>
                                     {{ $attendance->clock_in }}
                                 </td>
-                                <td
-                                    >
+                                <td>
                                     @if ($attendance->clock_out === null)
                                         -
                                     @else
                                         {{ $attendance->clock_out }}
                                     @endif
                                 </td>
-                                <td
-                                    >
+                                <td>
                                     @if ($attendance->work_duration === null)
                                         -
                                     @else
                                         {{ $attendance->work_duration }}
                                     @endif
                                 </td>
-                                <td
-                                    >
-                                    @if ($attendance->late_duration === null)
-                                        -
-                                    @else
-                                        {{ $attendance->late_duration }}
-                                    @endif
-                                </td>
-                                <td
-                                    >
+                                <td>
                                     {{ $attendance->location->name }}
                                 </td>
                                 @if ($attendance->presenceType && $attendance->presenceType->id === 1)
-                                    <td
-                                        class=" text-white bg-green-800">
+                                    <td class=" text-white bg-green-800">
                                         {{ $attendance->presenceType->name }}
                                     </td>
                                 @elseif ($attendance->presenceType && $attendance->presenceType->id === 2)
-                                    <td
-                                        class="text-white bg-red-800">
+                                    <td class="text-white bg-red-800">
                                         {{ $attendance->presenceType->name }}
                                     </td>
                                 @elseif ($attendance->presenceType && $attendance->presenceType->id === 3)
-                                    <td
-                                        class="text-white bg-yellow-800">
+                                    <td class="text-white bg-yellow-800">
                                         {{ $attendance->presenceType->name }}
                                     </td>
                                 @else
-                                    <td
-                                        class=>
+                                    <td class=>
                                         -
                                     </td>
                                 @endif
+                                <td>
+                                    @if ($attendance->notes === null)
+                                        -
+                                    @else
+                                        {{ $attendance->notes }}
+                                    @endif
+                                </td>
                                 <td class="">
                                     {{ $attendance->arrivalType->name }}
                                 </td>

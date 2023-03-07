@@ -1,6 +1,13 @@
 @extends('layouts.main')
 
 @section('section')
+    @if (session()->has('success'))
+        <div id="modalSuccess" data-izimodal-title="{{ session('success') }}">
+        </div>
+    @elseif (session()->has('error'))
+        <div id="modalError" data-izimodal-title="{{ session('error') }}">
+        </div>
+    @endif
     <div class="bg-white rounded-3xl p-8 mb-5">
         <h1 class="text-3xl font-bold text-center mb-5">Pengajuan Pulang Awal</h1>
         <div class="flex flex-col">
@@ -30,6 +37,9 @@
                                     </th>
                                     <th>
                                         Alasan
+                                    </th>
+                                    <th>
+                                        Catatan
                                     </th>
                                     <th>
                                         Action
@@ -62,6 +72,9 @@
                                         <td>
                                             {{ $attendance->reason }}
                                         </td>
+                                        <td>
+                                            {{ $attendance->notes }}
+                                        </td>
                                         <td class="flex justify-center">
                                             <form action="/dashboard/pulang-awal/approve/{{ $attendance->uuid }}"
                                                 method="post">
@@ -87,5 +100,26 @@
     </div>
     <script>
         let myTable = new DataTable('#myTable')
+
+        $(document).ready(function() {
+            $('#modalSuccess').iziModal({
+                autoOpen: true,
+                headerColor: '#4FB748',
+                overlayColor: 'rgba(0, 0, 0, 0.5)',
+                top: '0',
+            });
+
+            $('#modalError').iziModal({
+                autoOpen: true,
+                headerColor: '#EF4444',
+                overlayColor: 'rgba(0, 0, 0, 0.5)',
+                top: '0',
+            });
+
+            setTimeout(function() {
+                $('#modalSuccess').iziModal('close');
+                $('#modalError').iziModal('close');
+            }, 3000);
+        });
     </script>
 @endsection

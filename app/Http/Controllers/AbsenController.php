@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
+use Carbon\CarbonInterval;
 
 class AbsenController extends Controller
 {
@@ -31,7 +32,15 @@ class AbsenController extends Controller
         ])->where('id', $auth)->orderBy('created_at')->first();
 
         $locations = Location::where('status', 1)->get();
-        $attendances = Attendance::where('status', '0')->where('user_id', auth()->user()->id)->latest()->get();
+        $attendances = Attendance::where(function ($query) {
+            $query->where('status', 0)
+                ->where('request_status_id', '<>', 2);
+        })
+            ->orWhere(function ($query) {
+                $query->where('status', 1)
+                    ->where('request_status_id', '>=', 2);
+            })->where('key', $key . '_' . $auth)
+            ->latest()->get();
 
         $title = 'Absen';
 
@@ -109,7 +118,7 @@ class AbsenController extends Controller
      * @param  \App\Models\Absen  $absen
      * @return \Illuminate\Http\Response
      */
-    public function update(Attendance $attendance)
+    public function update(Attendance $attendance, Request $request)
     {
         $timeNow = Carbon::now('Asia/Jakarta');
 
@@ -131,12 +140,17 @@ class AbsenController extends Controller
             $presence = 3;
         }
 
+        $interval = CarbonInterval::minutes($diff);
+        $work_duration = $interval->cascade()->format('%h hours %i minutes');
+
         Attendance::where('key', $attendance->key)->update([
             'clock_out' => $timeNow->format('H:i:s'),
-            'work_duration' => $diff . ' Menit',
-            'late_duration' => $late_duration . ' Menit',
+            'work_duration' => $work_duration,
+            'late_duration' => $late_duration . ' minutes',
             'presence_type_id' => $presence,
-            'arrival_type_id' => 2
+            'arrival_type_id' => 2,
+            'notes' => $request->input('notes'),
+            'request_status_id' => null
         ]);
 
         return redirect('/dashboard')->with('success', 'Anda Berhasil Absen!');
@@ -160,10 +174,12 @@ class AbsenController extends Controller
         $key = $timeNow->format('ymd');
 
         $validatedData = $request->validate([
-            'reason' => ['required']
+            'reason' => ['required'],
+            'notes' => ['required']
         ]);
 
         $validatedData['status'] = 0;
+        $validatedData['request_status_id'] = 1;
 
         Attendance::where('key', $key . '_' . $auth)->update($validatedData);
 

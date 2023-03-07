@@ -17,7 +17,7 @@
                     class="flex justify-center items-center {{ Request::is('dashboard') ? 'bg-yellow-200' : '' }} font-bold text-sm text-yellow-900 py-3 px-4">
                     Home
                 </a>
-                @if (auth()->user()->request_type_id === null)
+                @if (auth()->user()->request_type_id === null || auth()->user()->request_type_id === 0)
                     <a href="/dashboard/absen"
                         class="flex justify-center items-center {{ Request::is('dashboard/absen') ? 'bg-yellow-200' : '' }} font-bold text-sm text-yellow-900 py-3 px-4">Absen</a>
                 @endif
@@ -81,7 +81,7 @@
                             class="flex items-center {{ Request::is('dashboard') ? 'bg-yellow-200' : '' }} rounded-xl font-bold text-sm text-yellow-900 py-3 px-4">
                             Home
                         </a>
-                        @if (auth()->user()->request_type_id === null)
+                        @if (auth()->user()->request_type_id === null || auth()->user()->request_type_id === 0)
                             <a href="/dashboard/absen"
                                 class="flex items-center {{ Request::is('dashboard/absen') ? 'bg-yellow-200' : '' }} rounded-xl font-bold text-sm text-yellow-900 py-3 px-4">Absen</a>
                         @endif
@@ -93,11 +93,11 @@
                             <p class="flex items-center text-sm text-gray-400 py-3 px-4 mt-3">Administration</p>
                             <a href="/dashboard/pulang-awal"
                                 class="flex items-center {{ Request::is('dashboard/pulang-awal') ? 'bg-yellow-200' : '' }} rounded-xl font-bold text-sm text-yellow-900 py-3 px-4">
-                                Pengajuan Pulang Awal
+                                Pulang Awal
                             </a>
                             <a href="/dashboard/pengajuan-cuti-sakit"
                                 class="flex items-center {{ Request::is('dashboard/pengajuan-cuti-sakit') ? 'bg-yellow-200' : '' }} rounded-xl font-bold text-sm text-yellow-900 py-3 px-4">
-                                Daftar Cuti / Sakit
+                                Cuti / Sakit
                             </a>
                             <a href="/dashboard/riwayat-absen"
                                 class="flex items-center {{ Request::is('dashboard/riwayat-absen') || Request::is('dashboard/riwayat-absen/filter') ? 'bg-yellow-200' : '' }} rounded-xl font-bold text-sm text-yellow-900 py-3 px-4">
