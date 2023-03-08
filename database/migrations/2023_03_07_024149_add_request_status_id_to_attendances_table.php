@@ -13,12 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('time_offs', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id');
-            $table->timestamp('tanggal_selesai');
-            $table->string('status');
-            $table->timestamps();
+        Schema::table('attendances', function (Blueprint $table) {
+            $table->foreignId('request_status_id')->nullable();
         });
     }
 
@@ -29,6 +25,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('time_off');
+        Schema::table('attendances', function (Blueprint $table) {
+            //
+        });
     }
 };

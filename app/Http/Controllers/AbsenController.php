@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Absen;
+use App\Models\Attendance;
+use App\Models\Location;
+use App\Models\Sysconf;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
+use Carbon\CarbonInterval;
 
 class AbsenController extends Controller
 {
@@ -19,14 +22,29 @@ class AbsenController extends Controller
     {
         $auth = auth()->user()->id;
         $timeNow = Carbon::now('Asia/Jakarta');
-        $timeLimit = Carbon::createFromTime(17, 0, 0, 'Asia/Jakarta');
-        $key = $timeNow->format('ym') . substr($timeNow->year, -2);
+        $timeOut = Sysconf::where('sysconf_name', 'time_out')->value('value');
+        $timeLimit = strtotime($timeOut);
+        $key = $timeNow->format('ymd');
 
-        $user = User::with(['absen' => fn ($query) =>
-            $query->where('key', $key.'_'.$auth)
-        ])->where('id', auth()->user()->id)->first();
+        $user = User::with([
+            'attendance' => fn ($query) =>
+            $query->where('key', $key . '_' . $auth)
+        ])->where('id', $auth)->orderBy('created_at')->first();
 
-        return view('absen', compact('user', 'timeNow', 'timeLimit'));
+        $locations = Location::where('status', 1)->get();
+        $attendances = Attendance::where(function ($query) {
+            $query->where('status', 0)
+                ->where('request_status_id', '<>', 2);
+        })
+            ->orWhere(function ($query) {
+                $query->where('status', 1)
+                    ->where('request_status_id', '>=', 2);
+            })->where('key', $key . '_' . $auth)
+            ->latest()->get();
+
+        $title = 'Absen';
+
+        return view('Absen', compact('title', 'user', 'attendances', 'locations', 'timeNow', 'timeOut', 'timeLimit'));
     }
 
     /**
@@ -49,36 +67,24 @@ class AbsenController extends Controller
     {
         $auth = auth()->user()->id;
         $timeNow = Carbon::now('Asia/Jakarta');
-        $key = $timeNow->format('ym') . substr($timeNow->year, -2);
-        $timeLimit = Carbon::createFromTime(8, 0, 0, 'Asia/Jakarta');
+        $key = $timeNow->format('ymd');
 
         $validatedData = $request->validate([
-            'lokasi' => ['required'],
-            'kehadiran' => ['required']
+            'location_id' => ['required'],
         ]);
 
         $validatedData['uuid'] = Str::orderedUuid();
-        $validatedData['key'] = $key.'_'.$auth;
-        $validatedData['user_id'] = auth()->user()->id;
-        $validatedData['tanggal'] = $timeNow->format('d-m-Y');
-        $validatedData['jam_masuk'] = $timeNow->format('H:m:s');
+        $validatedData['key'] = $key . '_' . $auth;
+        $validatedData['user_id'] = $auth;
+        $validatedData['date'] = $timeNow->format('d-m-Y');
+        $validatedData['clock_in'] = $timeNow->format('H:i:s');
         $validatedData['ip_address'] = $request->ip();
-        $validatedData['status'] = 'Masuk';
-        $validatedData['tahun'] = $timeNow->format('Y');
-        $validatedData['bulan'] = $timeNow->format('m');
+        $validatedData['arrival_type_id'] = 1;
+        $validatedData['status'] = 1;
+        $validatedData['year'] = $timeNow->format('Y');
+        $validatedData['month'] = $timeNow->format('m');
 
-        if ($timeNow->timestamp <= $timeLimit->timestamp) {
-            $validatedData['keterangan'] = 'On Time';
-        } else {
-            $validatedData['keterangan'] = 'Telat';
-        }
-
-        if ($request->date('tanggal_beres_cuti')) {
-            $validatedData['tanggal_beres_cuti'] = $request->date('tanggal_beres_cuti');
-        }
-
-
-        Absen::create($validatedData);
+        Attendance::create($validatedData);
 
         return redirect('/dashboard')->with('success', 'Anda Berhasil Absen!');
     }
@@ -112,15 +118,39 @@ class AbsenController extends Controller
      * @param  \App\Models\Absen  $absen
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request)
+    public function update(Attendance $attendance, Request $request)
     {
-        $auth = auth()->user()->id;
         $timeNow = Carbon::now('Asia/Jakarta');
-        $key = $timeNow->format('ym') . substr($timeNow->year, -2);
 
-        Absen::where('key', $key. '_' .$auth)->update([
-            'jam_keluar' => $timeNow->format('H:m:s'),
-            'status' => 'Keluar'
+        $sysconf = Sysconf::where('sysconf_name', 'working_time')->value('value');
+
+        $clock_in = strtotime(date('H:i', strtotime($attendance->clock_in)));
+        $clock_out = strtotime($timeNow->format('H:i'));
+
+        $working_time = $sysconf;
+
+        $diff = abs($clock_out - $clock_in) / 60;
+        $late_duration = $working_time - $diff;
+
+        if ($late_duration == 0) {
+            $presence = 1;
+        } else if ($late_duration > 0) {
+            $presence = 2;
+        } else {
+            $presence = 3;
+        }
+
+        $interval = CarbonInterval::minutes($diff);
+        $work_duration = $interval->cascade()->format('%h hours %i minutes');
+
+        Attendance::where('key', $attendance->key)->update([
+            'clock_out' => $timeNow->format('H:i:s'),
+            'work_duration' => $work_duration,
+            'late_duration' => $late_duration . ' minutes',
+            'presence_type_id' => $presence,
+            'arrival_type_id' => 2,
+            'notes' => $request->input('notes'),
+            'request_status_id' => null
         ]);
 
         return redirect('/dashboard')->with('success', 'Anda Berhasil Absen!');
@@ -135,5 +165,24 @@ class AbsenController extends Controller
     public function destroy(Absen $absen)
     {
         //
+    }
+
+    public function pengajuan(Request $request)
+    {
+        $auth = auth()->user()->id;
+        $timeNow = Carbon::now('Asia/Jakarta');
+        $key = $timeNow->format('ymd');
+
+        $validatedData = $request->validate([
+            'reason' => ['required'],
+            'notes' => ['required']
+        ]);
+
+        $validatedData['status'] = 0;
+        $validatedData['request_status_id'] = 1;
+
+        Attendance::where('key', $key . '_' . $auth)->update($validatedData);
+
+        return redirect('/dashboard')->with('success', 'Pengajuan anda berhasil dikirim, mohon tunggu');
     }
 }

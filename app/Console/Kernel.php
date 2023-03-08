@@ -2,6 +2,9 @@
 
 namespace App\Console;
 
+use App\Models\Absen;
+use App\Models\Pengajuan;
+use App\Models\User;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -15,7 +18,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->command('absen:daily')->dailyAt('23:59');
+        $schedule->command('dailycheck:cuti')->dailyAt('23:59');
+        $schedule->command('dailycheck:absen')->dailyAt('23:59');
     }
 
     /**
